@@ -1,0 +1,83 @@
+dmc - faq
+=========
+This document aims to be an entrypoint to resolve common
+questions about the usage of dmc.
+
+At the same time everybody is able to propose new problems,
+situations and be a guide for the TODO points.
+
+     #
+     #
+  ###############
+  #  #   #   #
+  ####   #   ####
+
+
+* How to define the default account?
+
+  ln -s ~/.dmc/acc.default ~/.dmc/acc/myaccount
+
+* How to 'unpack' the attachment files of a mail?
+
+  cd ~/.dmc/box/myaccount/inbox
+  mkdir mail-001.d
+  cd mail-001.d
+  dmc-pack -d ../mail.eml
+
+* How to send emails using msmtp?
+
+  The current implementation of dmc only supports msmtp for sending emails.
+  To use this method run 'dmc -e accountname' and change the SEND variable
+  to be '!msmtp'. Remember to have your ~/.msmtprc in 0600 perms with:
+
+    defaults
+    
+    account radare
+    user pancake
+    auth login
+    from pancake@radare.org
+    password popisapop
+    host radare.org
+
+    account default : radare
+
+* How can I get a pop3/imap4 shell?
+
+  $ dmc-imap4 fifo | openssl s_client -quiet -host yourhost -port 993 > fifo
+
+  $ dmc-pop3 fifo | nc yourhost -port 110 > fifo
+
+* How to add attachment files to a mail?
+
+  cat mail.txt | dmc-pack file1.zip file2.zip > mail.eml
+
+* Are mbox and Maildir supported?
+
+  No, not yet. Implementation proposals are welcome
+
+* How can I get the headers of a mail?
+
+  dmc -c cat 1
+
+* And the body?
+
+  TODO: 
+
+* What about mailcap?
+
+  cat .mailcap
+  text/html; w3m -dump -I %{charset} -T text/html %s; needsterminal; copiousoutput
+  application/pdf; evince %s
+  image/jpeg; feh %s
+  image/jpg; feh %s
+  image/gif; feh %s
+
+* Is there a way to hook actions?
+
+  Actually no. But there are plans to do it in ~/.dmc/hook/
+
+* Where is the file to setup a signature?
+
+  ~/.dmc/signature
+
+  if ~/.dmc/box/$NAME}/signature exists rules before the global one

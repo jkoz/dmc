@@ -1,0 +1,102 @@
+dmc - dynamic mail client
+=========================
+dmc is a minimalist e-mail client solution
+
+
+Requirements
+------------
+  msmtp to send emails (dmc-smtp is not implemented yet)
+  openssl to build with SSL support
+
+
+Installation
+------------
+Few binaries will be copied into the bin directory
+
+  make all install PREFIX=/usr
+
+If you want to build dmc without SSL edit config.mk or type:
+
+  make HAVE_SSL=0
+
+NOTE that default prefix is /usr, not /usr/local
+
+If you want to install dmc into a chroot, just set the DESTDIR:
+
+  make install DESTDIR=/path/to/my/chroot
+
+Configuration
+-------------
+Accounting information is stored in ~/.dmc/acc and can be
+edited with
+
+	dmc -e myaccount
+
+Type your signature in ~/.dmc/signature
+
+Configuring msmtp:
+------------------
+To be able to send emails you have to properly configure msmtp.
+
+$ cat <<EOF > ~/.msmtprc
+defaults
+
+account <account-name>
+user <user-name>
+auth login
+from <email-address>
+password <smtp-password>
+host <smtp-host-name>
+
+account default : <account-name>
+EOF
+
+Running
+-------
+Start one dmc mail daemon for each account
+
+	$ dmc start
+
+You can start a shell to the default account using the following command:
+
+	$ dmc -c
+
+In the same way you can just execute a command and get the output of it:
+
+	$ dmc -c on login ls "cat 1" off
+
+You can change the default account by using 'dmc -e'
+
+To send a mail add the contact to your addressbook
+
+	$ echo 'user <foo@bar.com>' >> ~/.dmc/addrbook
+
+or edit the addressbook
+
+	$ dmc -a
+
+Create a mail:
+
+	$ dmc -m "Hello World"
+
+Attach files to the last mail created with 'dmc -m':
+
+	dmc -A file.zip
+	#dmc-mime msg attach1.zip | dmc -m `dmc -a user`
+
+Manually construct the final mail with encoded attachments:
+
+	$ cd ~/.dmc/box/myaccount/out/
+	$ dmc-pack mail.lv3s6l.d/* < mail.lv3s6l /tmp/mail.eml
+
+Send all the mails in the 'out' box:
+
+	$ dmc push
+
+Fetch new mail:
+
+	$ dmc pull
+
+Stop the daemons
+
+	$ dmc stop

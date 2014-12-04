@@ -1,0 +1,51 @@
+TODO
+----
+* use dmc-tag to 'replied' 'new' 'forwarded' 'partial' mails
+* PULL METHOD:
+* lsd ! cd - ; ls ! get 1
+---
+* Make it more fail-fast (use exit, instead of free)
+* Create a mail with attachments (dmc -m addr subject file1 file2 file3 ..)
+* Attach file to given mail (not last one)
+* Define a list of 'subscribed' folders for IMAP ~/.dmc/box/.folders ?
+* Pull specific folder (dmc pull [folder])
+* getword() is implemented so MANY times.. MERGE!
+* implement dmc-dmc to walk thru local dirs
+
+* pull methods...
+
+ This topic requires some discussion to get a proper design.
+
+ Each fetch backend (imap4, pop3, mdir, ..) needs to implement their own
+ syncronization mechanism. This decision simplifies the work to translate
+ internal messages, open doors for per-protocol optimizations.
+
+ The sync depends on some options:
+
+ - direction: are we going to push local changes to server?
+              or just fetch the new messages?
+ - read/unread messages: we should sync this flag too
+              it is not yet defined in dmc
+ - delete messages from server?
+ - limit number of messages to fetch? (we must remove old messages) dmclimit()?
+
+status of messages:
+ - read/unread/forwarded
+
+ Sync algorithm should look like this:
+
+fetchdir ("~/.dmc/box/foo/in/")
+
+fetchdir(dirpath) {
+  dir = opendir (dirpath)
+
+  - fetch last message       <---.
+  - check last message in inbox  |
+  - repeat until match or limit -'
+
+  foreach (file in dir) {
+    if (isdir (file)) {
+      fetchdir(dir+file);
+    }
+  }
+}
